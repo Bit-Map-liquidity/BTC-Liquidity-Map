@@ -79,7 +79,7 @@ while True:
     # Render in Streamlit
     # ---------------------------------------------------------
     with placeholder.container():
-        st.plotly_chart(fig, use_container_width=True)
+       st.plotly_chart(fig, use_container_width=True, key=str(time.time()))
 
     # Update speed (5 times per second)
     time.sleep(0.2)
