@@ -1,6 +1,6 @@
 import requests
 
-BINANCE_PRICE_URL = "https://api.binance.com/api/v3/ticker/price"
+BINANCE_PRICE_URL = "https://api1.binance.com/api/v3/ticker/price"
 
 def get_price(symbol="BTCUSDT"):
     try:
