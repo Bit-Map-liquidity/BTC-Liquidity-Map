@@ -1,52 +1,25 @@
-import requests
+import websocket
+import json
+import threading
 
-COINGECKO_URL = "https://api.coingecko.com/api/v3/simple/price"
-BINANCE_URL = "https://api1.binance.com/api/v3/ticker/price"
-HYPERLIQUID_URL = "https://api.hyperliquid.xyz/info"
+latest_price = None
 
-last_price = None
+def _run_socket(symbol):
+    global latest_price
 
-def get_price(symbol="BTCUSDT"):
-    global last_price
+    stream = f"wss://stream.binance.com:9443/ws/{symbol.lower()}@trade"
 
-    # Map symbols to CoinGecko IDs
-    mapping = {
-        "BTCUSDT": "bitcoin",
-        "ETHUSDT": "ethereum",
-        "SOLUSDT": "solana"
-    }
+    def on_message(ws, message):
+        global latest_price
+        data = json.loads(message)
+        latest_price = float(data["p"])
 
-    coin_id = mapping.get(symbol, "bitcoin")
+    ws = websocket.WebSocketApp(stream, on_message=on_message)
+    ws.run_forever()
 
-    # 1️⃣ Try CoinGecko
-    try:
-        r = requests.get(COINGECKO_URL, params={"ids": coin_id, "vs_currencies": "usd"}, timeout=2)
-        data = r.json()
-        price = float(data[coin_id]["usd"])
-        last_price = price
-        return price
-    except:
-        pass
+def start_price_stream(symbol="btcusdt"):
+    thread = threading.Thread(target=_run_socket, args=(symbol,), daemon=True)
+    thread.start()
 
-    # 2️⃣ Try Binance
-    try:
-        r = requests.get(BINANCE_URL, params={"symbol": symbol}, timeout=2)
-        data = r.json()
-        price = float(data["price"])
-        last_price = price
-        return price
-    except:
-        pass
-
-    # 3️⃣ Try Hyperliquid
-    try:
-        r = requests.get(HYPERLIQUID_URL, timeout=2)
-        data = r.json()
-        price = float(data["markPx"])
-        last_price = price
-        return price
-    except:
-        pass
-
-    # 4️⃣ Fallback: return last known price
-    return last_price
+def get_latest_price():
+    return latest_price
