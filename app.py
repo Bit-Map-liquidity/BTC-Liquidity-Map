@@ -1,8 +1,8 @@
 import streamlit as st
+import time
 from modules.price import get_price
 
 st.set_page_config(page_title="BTC Liquidity Dashboard", layout="wide")
-st.autorefresh(interval=5000, key="refresh") 
 
 # Sidebar
 st.sidebar.title("Settings")
@@ -19,4 +19,8 @@ price = get_price(symbol)
 if price:
     st.metric(label="Current Price", value=f"${price:,.2f}")
 else:
-    st.error("Failed to fetch price from Binance")
+    st.error("Failed to fetch price")
+
+# Auto-refresh every 5 seconds
+time.sleep(5)
+st.experimental_rerun()
