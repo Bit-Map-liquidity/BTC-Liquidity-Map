@@ -11,16 +11,18 @@ symbol = st.sidebar.selectbox("Select Symbol", ["BTCUSDT", "ETHUSDT", "SOLUSDT"]
 # Main Title
 st.title("BTC Liquidity Dashboard")
 
-# Live Price Section
-st.subheader(f"Live Price — {symbol}")
+# Create a placeholder container for live updates
+placeholder = st.empty()
 
-price = get_price(symbol)
+while True:
+    with placeholder.container():
+        st.subheader(f"Live Price — {symbol}")
 
-if price:
-    st.metric(label="Current Price", value=f"${price:,.2f}")
-else:
-    st.error("Failed to fetch price")
+        price = get_price(symbol)
 
-# Auto-refresh every 5 seconds
-time.sleep(5)
-st.experimental_rerun()
+        if price:
+            st.metric(label="Current Price", value=f"${price:,.2f}")
+        else:
+            st.error("Failed to fetch price")
+
+    time.sleep(5)
