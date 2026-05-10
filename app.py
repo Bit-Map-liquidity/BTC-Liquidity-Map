@@ -2,6 +2,7 @@ import streamlit as st
 from modules.price import get_price
 
 st.set_page_config(page_title="BTC Liquidity Dashboard", layout="wide")
+st.autorefresh(interval=5000, key="refresh") 
 
 # Sidebar
 st.sidebar.title("Settings")
